@@ -1,0 +1,147 @@
+#+TITLE:     Building a Debian Live based USB stick image for a thinlinc terminal
+#+AUTHOR:    David Edmondson
+#+EMAIL:     dme@dme.org
+#+DATE:      2013-01-29 Tue
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+- For more information on Debian, see http://debian.org.
+- For more information on thinlinc, see http://www.cendio.com.
+
+* Pre-requisites:
+
+** A system running Debian Testing.
+    Other systems may work (Debian Stable, Ubuntu, etc.), but they are
+    not tested.
+
+** The live-build package:
+    $ sudo apt-get install live-build
+
+** The contents of this repository.
+    Simply clone this repository using git:
+
+    $ cd <wherever>
+    $ git clone http://github.com/dme/terminal-live
+
+** The thinlinc client package.
+    This must be acquired from
+    http://www.cendio.com/downloads/clients/. Place it in
+    =config/packages.chroot=. For example:
+    
+    $ cd <wherever>/terminal-live
+    $ wget -O \
+      config/packages.chroot/thinlinc-client_4.0.0-3717_i386.deb \
+      http://www.cendio.com/downloads/clients/thinlinc-client_4.0.0-3717_i386.deb
+
+** A USB stick.
+    The resulting image is around 240MB, so almost any USB stick
+    available today will be adequate.
+
+* Building the image:
+   
+   $ cd <wherever>/terminal-live
+   $ sudo lb build
+     < wait quite a while >
+
+   You should now have a new image ready to write to your USB stick:
+
+   $ cd <wherever>/terminal-live
+   $ ls -l binary.hybrid.iso 
+   -rw-r--r-- 1 root root 238026752 Jan 29 07:28 binary.hybrid.iso
+
+* Writing the image to a USB stick:
+
+   Please be careful - don't overwrite the wrong device. If you don't
+   know what you are doing, ask someone for help.
+
+   THIS WILL DESTROY THE EXISTING CONTENTS OF THE USB STICK.
+
+   $ sudo dd if=binary.hybrid.iso of=/dev/fishstick
+
+   "/dev/fishstick" in that previous line is clearly wrong - it should
+   be /dev/sdb or /dev/sdc or something similar. You can examine the
+   tail of 'dmesg' output to see what name was assigned to the USB
+   stick that you just inserted.
+
+* Booting the image:
+
+   Boot your terminal from the USB stick. Exactly what is required to
+   achieve this differs between systems. Often it requires pressing
+   F12 when the BIOS messages are being shown.
+
+   The system will boot from the USB stick and provide two options:
+
+      - Live- ()
+      - Live- ( rescue)
+
+   The second entry will be selected, but we want to use the
+   first. Move the selection using the arrow keys to the first entry,
+   then press 'Enter'. The system should boot Linux, configure the
+   network and then start the X server and thinlinc client.
+
+   The USB stick should *not* be removed while the terminal is being
+   used (though see notes about =toram= below).
+
+* Using the image:
+
+   The thinlinc client should appear (you might need to move the mouse
+   or press a key). Modify the thinlinc parameters (server, username,
+   etc.) and instruct it to connect. The client should connect to your
+   thinlinc server and work as normal.
+
+   When you're done, simply turn off or reset the terminal.
+
+* Notes
+
+** The image is big!
+   240MB is more than twice the size expected, though no attempt has
+   been made to minimise the number of packages, etc. For potential
+   terminals with 1G or more of memory, this doesn't appear to be a
+   problem.
+
+** Network configuration is fixed.
+   Wired systems that can use DHCP work easily.
+
+   Wireless systems currently require that the relevant network
+   information be added to =/etc/network/interfaces= and
+   =/etc/wpa_supplicant/wpa_supplicant.conf=.
+
+   A better approach would be to add =wicd= and =wicd-curses= (and
+   maybe =wicd-gtk=) to the image and figure out how to pre-configure
+   a small number of known networks.
+
+** IPv6 is not enabled on any interfaces.
+   See above - should be a simple change to =/etc/network/interfaces=
+   with the current implementation.
+
+** The 'rescue' boot option is the default.
+   Two options are added to the image, but the second 'rescue' option
+   is the default. This should be fixed so that the normal option is
+   the default, and the timeout set to 5 seconds, in order that the
+   terminal can boot automatically.
+
+** The boot options don't have useful names.
+
+** The Caps-Lock key is mapped to Control.
+   This is a personal preference. How might it be implemented in a
+   more friendly way?
+
+** Copying the image to memory can be useful.
+   Adding the =toram= option to the boot arguments (either by adding
+   it to =LB_BOOTAPPEND_LIVE= in =config/binary= and rebuilding the
+   image or by hitting 'TAB' at the boot loader) causes the contents
+   of the USB stick to be read into RAM during the booting of the
+   terminal.
+
+   This means that the USB stick can be removed once the terminal has
+   booted, and also that some operations are faster (as the filesystem
+   is stored in memory rather than on the relatively slow USB stick).
