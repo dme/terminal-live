@@ -24,81 +24,95 @@
     not tested.
 
 ** The live-build package:
-    $ sudo apt-get install live-build
+   #+BEGIN_EXAMPLE
+   $ sudo apt-get install live-build
+   #+END_EXAMPLE
 
 ** The contents of this repository.
-    Simply clone this repository using git:
+   Simply clone this repository using git:
 
-    $ cd <wherever>
-    $ git clone http://github.com/dme/terminal-live
+   #+BEGIN_EXAMPLE
+   $ cd <wherever>
+   $ git clone http://github.com/dme/terminal-live
+   #+END_EXAMPLE
 
 ** The thinlinc client package.
-    This must be acquired from
-    http://www.cendio.com/downloads/clients/. Place it in
-    =config/packages.chroot=. For example:
+   This must be acquired from
+   http://www.cendio.com/downloads/clients/. Place it in
+   =config/packages.chroot=. For example:
     
-    $ cd <wherever>/terminal-live
-    $ wget -O \
-      config/packages.chroot/thinlinc-client_4.0.0-3717_i386.deb \
-      http://www.cendio.com/downloads/clients/thinlinc-client_4.0.0-3717_i386.deb
+   #+BEGIN_EXAMPLE
+   $ cd <wherever>/terminal-live
+   $ wget -O \
+     config/packages.chroot/thinlinc-client_4.0.0-3717_i386.deb \
+     http://www.cendio.com/downloads/clients/thinlinc-client_4.0.0-3717_i386.deb
+   #+END_EXAMPLE
 
 ** A USB stick.
-    The resulting image is around 240MB, so almost any USB stick
-    available today will be adequate.
+   The resulting image is around 240MB, so almost any USB stick
+   available today will be adequate.
 
 * Building the image:
    
-   $ cd <wherever>/terminal-live
-   $ sudo lb build
-     < wait quite a while >
+  #+BEGIN_EXAMPLE
+  $ cd <wherever>/terminal-live
+  $ sudo lb build
+    < wait quite a while >
+  #+END_EXAMPLE
 
-   You should now have a new image ready to write to your USB stick:
+  You should now have a new image ready to write to your USB stick:
 
-   $ cd <wherever>/terminal-live
-   $ ls -l binary.hybrid.iso 
-   -rw-r--r-- 1 root root 238026752 Jan 29 07:28 binary.hybrid.iso
+  #+BEGIN_EXAMPLE
+  $ cd <wherever>/terminal-live
+  $ ls -l binary.hybrid.iso 
+  -rw-r--r-- 1 root root 238026752 Jan 29 07:28 binary.hybrid.iso
+  #+END_EXAMPLE
 
 * Writing the image to a USB stick:
 
-   Please be careful - don't overwrite the wrong device. If you don't
-   know what you are doing, ask someone for help.
+  Please be careful - don't overwrite the wrong device. If you don't
+  know what you are doing, ask someone for help.
 
-   THIS WILL DESTROY THE EXISTING CONTENTS OF THE USB STICK.
+  THIS WILL DESTROY THE EXISTING CONTENTS OF THE USB STICK.
 
-   $ sudo dd if=binary.hybrid.iso of=/dev/fishstick
+  #+BEGIN_EXAMPLE
+  $ sudo dd if=binary.hybrid.iso of=/dev/fishstick
+  #+END_EXAMPLE
 
-   "/dev/fishstick" in that previous line is clearly wrong - it should
-   be /dev/sdb or /dev/sdc or something similar. You can examine the
-   tail of 'dmesg' output to see what name was assigned to the USB
-   stick that you just inserted.
+  =/dev/fishstick= in that previous line is clearly wrong - it should
+  be =/dev/sdb= or =/dev/sdc= or something similar. You can examine
+  the tail of =dmesg= output to see what name was assigned to the USB
+  stick that you just inserted.
 
 * Booting the image:
 
-   Boot your terminal from the USB stick. Exactly what is required to
-   achieve this differs between systems. Often it requires pressing
-   F12 when the BIOS messages are being shown.
+  Boot your terminal from the USB stick. Exactly what is required to
+  achieve this differs between systems. Often it requires pressing F12
+  when the BIOS messages are being shown.
 
-   The system will boot from the USB stick and provide two options:
+  The system will boot from the USB stick and provide two options:
 
-      - Live- ()
-      - Live- ( rescue)
+  #+BEGIN_EXAMPLE
+     - Live- ()
+     - Live- ( rescue)
+  #+END_EXAMPLE
 
-   The second entry will be selected, but we want to use the
-   first. Move the selection using the arrow keys to the first entry,
-   then press 'Enter'. The system should boot Linux, configure the
-   network and then start the X server and thinlinc client.
+  The second entry will be selected, but we want to use the
+  first. Move the selection using the arrow keys to the first entry,
+  then press 'Enter'. The system should boot Linux, configure the
+  network and then start the X server and thinlinc client.
 
-   The USB stick should *not* be removed while the terminal is being
-   used (though see notes about =toram= below).
+  The USB stick should *not* be removed while the terminal is being
+  used (though see notes about =toram= below).
 
 * Using the image:
 
-   The thinlinc client should appear (you might need to move the mouse
-   or press a key). Modify the thinlinc parameters (server, username,
-   etc.) and instruct it to connect. The client should connect to your
-   thinlinc server and work as normal.
+  The thinlinc client should appear (you might need to move the mouse
+  or press a key). Modify the thinlinc parameters (server, username,
+  etc.) and instruct it to connect. The client should connect to your
+  thinlinc server and work as normal.
 
-   When you're done, simply turn off or reset the terminal.
+  When you're done, simply turn off or reset the terminal.
 
 * Notes
 
@@ -145,3 +159,5 @@
    This means that the USB stick can be removed once the terminal has
    booted, and also that some operations are faster (as the filesystem
    is stored in memory rather than on the relatively slow USB stick).
+
+** =tlclient= could be pre-configured for a particular server.
