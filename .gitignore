@@ -1,1 +1,13 @@
 *~
+/.lock
+/.build
+/binary
+/chroot
+/cache
+/binary.contents
+/binary.hybrid.iso
+/binary.packages
+/chroot.packages.install
+/chroot.packages.live
+/README.html
+/config/packages.chroot/thinlinc-client_*.deb
