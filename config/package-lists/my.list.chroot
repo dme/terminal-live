@@ -1,1 +1,1 @@
-openbox ssh firmware-iwlwifi firmware-realtek wireless-tools wpasupplicant
+openbox ssh firmware-iwlwifi firmware-realtek firmware-ralink wireless-tools wpasupplicant
