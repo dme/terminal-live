@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+# Set a 2 second timeout.
+sed -i 's/timeout 0/timeout 20/' binary/isolinux/isolinux.cfg
+
+# Nicer names.
+sed -i \
+    -e 's/live-/terminal/' \
+    -e 's/\^Live/Terminal/' \
+    binary/isolinux/live.cfg
+
+# First entry should be the default.
+sed -i -e '/menu default/d' binary/isolinux/live.cfg
+sed -i -e '/^label terminal$/amenu default' binary/isolinux/live.cfg
